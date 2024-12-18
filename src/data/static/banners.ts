@@ -285,12 +285,12 @@ export const modernDemoBanner = [
     slug: 'winter-collection',
     image: {
       mobile: {
-        url: '/assets/images/banner/ayush.png',
+        url: '/assets/images/banner/banner-10.jpg',
         width: 450,
         height: 180,
       },
       desktop: {
-        url: '/assets/images/banner/ayush.png',
+        url: '/assets/images/banner/banner-10.jpg',
         width: 1800,
         height: 570,
       },
