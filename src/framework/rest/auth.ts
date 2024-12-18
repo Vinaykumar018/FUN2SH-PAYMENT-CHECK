@@ -203,7 +203,7 @@ export function useRegister() {
         return;
       }
       if (!data.token) {
-        toast.error(t("forms:error-credential-wrong"));
+        toast.error(t('Login failed. Check your details.'));
       }
     },
   });
@@ -321,7 +321,7 @@ export function useSocialLogin() {
         return;
       }
       if (!data.token) {
-        toast.error(`${t('error-credential-wrong')}`);
+        toast.error(`${'Login failed. Check your details.'}`);
       }
     },
     onError: (error: Error) => {
