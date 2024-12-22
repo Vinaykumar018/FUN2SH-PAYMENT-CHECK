@@ -65,7 +65,7 @@ const RazorpayPaymentModal: React.FC<Props> = ({
     if (!isSettingsLoading) {
       paymentHandle();
     }
-  }, [isSettingsLoading]);
+  },  [isSettingsLoading, paymentHandle]);
 
   if (isSettingsLoading) {
     return <Spinner showText={false} />;

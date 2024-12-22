@@ -26,8 +26,10 @@ export default function OrderPage() {
   const isPaymentModalEnabled =
     order_status !== OrderStatus?.CANCELLED &&
     payment_status === PaymentStatus.PENDING &&
-    payment_intent?.payment_intent_info &&
-    !payment_intent?.payment_intent_info?.is_redirect;
+    payment_intent?.payment_intent_info 
+    
+    // &&
+    // !payment_intent?.payment_intent_info?.is_redirect;
   
   useEffect(() => {
     if (isPaymentModalEnabled) {
