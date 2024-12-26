@@ -1,6 +1,5 @@
-
-
-import { useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import useRazorpay from '@lib/use-razorpay';
 import { formatAddress } from '@lib/format-address';
 import { useTranslation } from 'next-i18next';
@@ -22,6 +21,8 @@ const RazorpayPaymentModal: React.FC<Props> = ({
   const { loadRazorpayScript, checkScriptLoaded } = useRazorpay();
   const { data: settings, isLoading: isSettingsLoading } = useSettings();
   const { createOrderPayment } = useOrderPayment();
+  
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'failure'>('idle');
 
   const paymentHandle = useCallback(async () => {
     if (!checkScriptLoaded()) {
@@ -37,12 +38,18 @@ const RazorpayPaymentModal: React.FC<Props> = ({
       image: settings?.options?.logo?.original,
       order_id: paymentIntentInfo.payment_id!,
       handler: async () => {
-        await createOrderPayment({
-          tracking_number: trackingNumber,
-          payment_gateway: 'razorpay',
-        });
-        // Refresh the page upon successful payment
-        window.location.reload();
+        try {
+          await createOrderPayment({
+            tracking_number: trackingNumber,
+            payment_gateway: 'razorpay',
+          });
+          setPaymentStatus('success');
+          toast.success('Payment successful! Thank you for your order.');
+        } catch (error) {
+          console.error('Payment success handling failed:', error);
+          setPaymentStatus('failure');
+          toast.error('Payment successful, but an error occurred updating your order.');
+        }
       },
       prefill: {
         name: paymentIntentInfo.customer_name,
@@ -53,7 +60,11 @@ const RazorpayPaymentModal: React.FC<Props> = ({
         address: formatAddress(paymentIntentInfo.billing_address),
       },
       modal: {
-        ondismiss: () => console.log('Payment modal closed'),
+        ondismiss: () => {
+          console.warn('Payment modal dismissed.');
+          setPaymentStatus('failure');
+          toast.warn('Payment not completed. Please try again.');
+        },
       },
     };
 
@@ -65,13 +76,18 @@ const RazorpayPaymentModal: React.FC<Props> = ({
     if (!isSettingsLoading) {
       paymentHandle();
     }
-  },  [isSettingsLoading, paymentHandle]);
+  }, [isSettingsLoading, paymentHandle]);
 
   if (isSettingsLoading) {
     return <Spinner showText={false} />;
   }
 
-  return null;
+  return (
+    <div>
+      {paymentStatus === 'success' && <p>Payment successful! Your order is confirmed.</p>}
+      {paymentStatus === 'failure' && <p>Payment failed. Please try again.</p>}
+    </div>
+  );
 };
 
 export default RazorpayPaymentModal;
